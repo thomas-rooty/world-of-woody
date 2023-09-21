@@ -2,19 +2,25 @@ import * as THREE from 'three'
 import { useRef } from 'react'
 import { Controls } from '../../App.tsx'
 import { useFrame } from '@react-three/fiber'
-import { RigidBody, CapsuleCollider } from '@react-three/rapier'
-import { Sphere, useKeyboardControls } from '@react-three/drei'
+import { CapsuleCollider, RigidBody } from '@react-three/rapier'
+import { useKeyboardControls } from '@react-three/drei'
 import { useCharacterStore } from '../../../stores/character.store.ts'
+import CharacterModel from './CharacterModel.tsx'
 
 const JUMP_FORCE = 0.5
 const MOVEMENT_SPEED = 0.1
-const MAX_SPEED = 4
+const MAX_SPEED = 3
+const RUN_VEL = 1.5
 
 const CharacterController = () => {
   const rigidbody = useRef<any>()
   const character = useRef<any>()
   const isOnFloor = useCharacterStore((state) => state.isOnFloor)
   const setIsOnFloor = useCharacterStore((state) => state.setIsOnFloor)
+  const { characterState, setCharacterState } = useCharacterStore((state) => ({
+    characterState: state.characterState,
+    setCharacterState: state.setCharacterState,
+  }))
 
   // Controls
   const jumpPressed = useKeyboardControls((state) => state[Controls.jump])
@@ -51,6 +57,17 @@ const CharacterController = () => {
     }
 
     rigidbody.current?.applyImpulse(impulse, true)
+
+    if ( Math.abs(linvel.x) > RUN_VEL || Math.abs(linvel.z) > RUN_VEL ) {
+      if (characterState !== 'Run') {
+        setCharacterState('Run')
+      }
+    } else {
+      if (characterState !== 'Idle') {
+        setCharacterState('Idle')
+      }
+    }
+
     if (changeRotation) {
       character.current.rotation.y = Math.atan2(linvel.x, linvel.z)
     }
@@ -86,9 +103,7 @@ const CharacterController = () => {
       >
         <CapsuleCollider args={[0.8, 0.4]} position={[0, 1.2, 0]} />
         <group ref={character}>
-          <Sphere castShadow receiveShadow>
-            <meshStandardMaterial color="hotpink" />
-          </Sphere>
+          <CharacterModel />
         </group>
       </RigidBody>
     </group>
