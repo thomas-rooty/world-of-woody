@@ -32,7 +32,7 @@ function App() {
         <Canvas shadows camera={{ fov: 60 }}>
           <Stats />
           <Suspense fallback={null}>
-            <Physics debug gravity={[0, -40, 0]}>
+            <Physics debug gravity={[0, -30, 0]}>
               <Experience />
             </Physics>
           </Suspense>
