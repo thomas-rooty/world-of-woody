@@ -1,6 +1,7 @@
 import Ground from './ground/Ground.tsx'
-import CharacterController from './player/CharacterController.tsx'
 import { SampleSphere } from './objects/SampleSphere.tsx'
+import CharacterController from './player/CharacterController.tsx'
+import Tractor from './vehicle/Vehicle.tsx'
 
 const Experience = () => {
   return (
@@ -9,7 +10,7 @@ const Experience = () => {
       <ambientLight intensity={1} />
 
       {/* CHARACTER */}
-      <CharacterController />
+      <Tractor />
 
       {/* STAGE */}
       <Ground />
