@@ -16,11 +16,13 @@
     "@react-three/fiber": "^8.14.2",
     "@react-three/rapier": "^1.1.1",
     "@types/three": "^0.156.0",
+    "alea": "^1.0.1",
     "eslint-plugin-react": "^7.33.2",
     "leva": "^0.9.35",
     "prettier": "^3.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "simplex-noise": "^4.0.1",
     "three": "^0.156.1",
     "zustand": "^4.4.1"
   },

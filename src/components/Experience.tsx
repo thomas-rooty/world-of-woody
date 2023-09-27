@@ -9,11 +9,10 @@ const Experience = () => {
       {/* LIGHTS */}
       <SoftShadows size={10} samples={20} />
       <ambientLight intensity={1} />
-      <directionalLight color={'#bcbffe'} intensity={0.5} position={[-10, 2, -6]} shadow-mapSize={[1024, 1024]} />
       <directionalLight
         castShadow
         color={'#feefc4'}
-        intensity={2}
+        intensity={1}
         position={[10, 12, 6]}
         shadow-mapSize={[1024, 1024]}
       />

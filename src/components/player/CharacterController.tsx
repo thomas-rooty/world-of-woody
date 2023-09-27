@@ -62,22 +62,21 @@ const CharacterController = () => {
     }
 
     if (changeRotation) {
-      const angle = Math.atan2(linvel.x, linvel.z)
-      character.current.rotation.y = angle
+      character.current.rotation.y = Math.atan2(linvel.x, linvel.z)
     }
 
     // CAMERA FOLLOW
     const characterWorldPosition = character.current.getWorldPosition(new THREE.Vector3())
 
     const targetCameraPosition = new THREE.Vector3(
-      characterWorldPosition.x + 3,
-      characterWorldPosition.y + 4,
-      characterWorldPosition.z + 7
+      characterWorldPosition.x + 5,
+      characterWorldPosition.y + 6,
+      characterWorldPosition.z + 9
     )
 
-    state.camera.position.lerp(targetCameraPosition, delta * 2)
+    state.camera.position.lerp(targetCameraPosition, delta * 7)
 
-    const targetLookAt = new THREE.Vector3(characterWorldPosition.x, 0, characterWorldPosition.z)
+    const targetLookAt = new THREE.Vector3(characterWorldPosition.x, characterWorldPosition.y, characterWorldPosition.z)
 
     const direction = new THREE.Vector3()
     state.camera.getWorldDirection(direction)
