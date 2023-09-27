@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { useRef } from 'react'
 import { Controls } from '../../App.tsx'
 import { useFrame } from '@react-three/fiber'
-import { CapsuleCollider, RigidBody } from '@react-three/rapier'
+import { CapsuleCollider, CuboidCollider, RigidBody } from '@react-three/rapier'
 import { useKeyboardControls } from '@react-three/drei'
 import { useCharacterStore } from '../../../stores/character.store.ts'
 import CharacterModel from './CharacterModel.tsx'
@@ -95,7 +95,7 @@ const CharacterController = () => {
   return (
     <group>
       <RigidBody ref={rigidbody} colliders={false} scale={[0.5, 0.5, 0.5]} enabledRotations={[false, false, false]}>
-        <CapsuleCollider args={[0.8, 0.4]} position={[0, 1.2, 0]} />
+        <CuboidCollider args={[1.2, 1.2, 1.2]} position={[0, 1.2, 0]} mass={0.1} />
         <group ref={character}>
           <CharacterModel />
         </group>
