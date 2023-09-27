@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { useRef } from 'react'
 import { Controls } from '../../App.tsx'
 import { useFrame } from '@react-three/fiber'
-import { CapsuleCollider, CuboidCollider, RigidBody } from '@react-three/rapier'
+import { CuboidCollider, RigidBody } from '@react-three/rapier'
 import { useKeyboardControls } from '@react-three/drei'
 import { useCharacterStore } from '../../../stores/character.store.ts'
 import CharacterModel from './CharacterModel.tsx'
@@ -49,6 +49,7 @@ const CharacterController = () => {
       changeRotation = true
     }
 
+    // Apply impulse to the rigidbody
     rigidbody.current?.applyImpulse(impulse, true)
 
     if (Math.abs(linvel.x) > RUN_VEL || Math.abs(linvel.z) > RUN_VEL) {
@@ -90,6 +91,11 @@ const CharacterController = () => {
     lerpedLookAt.lerpVectors(currentLookAt, targetLookAt, delta * 2)
 
     state.camera.lookAt(lerpedLookAt)
+
+    // View bobbing effect
+    if (forwardPressed || backwardPressed || leftPressed || rightPressed) {
+      state.camera.position.y = characterWorldPosition.y + 6 + Math.sin(state.clock.elapsedTime * 15) * 0.03
+    }
   })
 
   return (
