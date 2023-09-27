@@ -4,7 +4,7 @@ import { BufferAttribute } from 'three'
 import useNoisyVertices from './hooks/useNoisyVertices'
 import useFlipPlaneOnX from './hooks/useFlipPlaneOnX.ts'
 
-// Define your static control values
+// Define static control values for the height map
 const STATIC_CONTROL_VALUES = {
   seed: 'react-three-fiber',
   resolution: 50,
@@ -20,20 +20,29 @@ interface HeightMapProps {
 }
 
 const HeightMap: React.FC<HeightMapProps> = ({ size = 200 }) => {
+  // Create references for the plane mesh and geometry
   const planeMesh = useRef<THREE.Mesh>(null)
   const planeGeo = useRef<THREE.PlaneGeometry>(null)
+
+  // Use a custom hook to flip the plane on the X-axis
   useFlipPlaneOnX(planeMesh)
 
+  // Use a custom hook to generate noisy vertices for the height map
   const vertices = useNoisyVertices(STATIC_CONTROL_VALUES, STATIC_CONTROL_VALUES)
 
+  // Init the geometry
   useEffect(() => {
     if (!planeMesh.current || !planeGeo.current) {
       return
     }
+
+    // Update the position attribute of the plane geometry with new vertices
     planeGeo.current.setAttribute('position', new BufferAttribute(vertices, 3))
     planeGeo.current.attributes.position.needsUpdate = true
+
+    // Recalculate vertex normals for shading
     planeGeo.current.computeVertexNormals()
-  }, [vertices, planeMesh, planeGeo])
+  }, [])
 
   return (
     <mesh ref={planeMesh} castShadow={true} receiveShadow={true}>
