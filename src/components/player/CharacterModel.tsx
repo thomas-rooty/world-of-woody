@@ -32,7 +32,7 @@ const CharacterModel = (props: JSX.IntrinsicElements['group']) => {
     if (action) {
       action.reset().fadeIn(0.2).play()
       return () => {
-        action.fadeOut(0.2)
+        action.fadeOut(0.1)
       }
     }
   }, [characterState])

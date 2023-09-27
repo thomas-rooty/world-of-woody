@@ -7,7 +7,6 @@ import { useKeyboardControls } from '@react-three/drei'
 import { useCharacterStore } from '../../../stores/character.store.ts'
 import CharacterModel from './CharacterModel.tsx'
 
-const JUMP_FORCE = 0.5
 const MOVEMENT_SPEED = 0.1
 const MAX_SPEED = 3
 const RUN_VEL = 1.5
@@ -15,30 +14,24 @@ const RUN_VEL = 1.5
 const CharacterController = () => {
   const rigidbody = useRef<any>()
   const character = useRef<any>()
-  const isOnFloor = useCharacterStore((state) => state.isOnFloor)
-  const setIsOnFloor = useCharacterStore((state) => state.setIsOnFloor)
   const { characterState, setCharacterState } = useCharacterStore((state) => ({
     characterState: state.characterState,
     setCharacterState: state.setCharacterState,
   }))
 
   // Controls
-  const jumpPressed = useKeyboardControls((state) => state[Controls.jump])
   const leftPressed = useKeyboardControls((state) => state[Controls.left])
   const rightPressed = useKeyboardControls((state) => state[Controls.right])
   const forwardPressed = useKeyboardControls((state) => state[Controls.forward])
   const backwardPressed = useKeyboardControls((state) => state[Controls.backward])
 
   // Character logic
-  useFrame((state) => {
+  useFrame((state, delta) => {
     const impulse = { x: 0, y: 0, z: 0 }
     const linvel = rigidbody.current?.linvel()
     let changeRotation = false
 
     // Movement
-    if (jumpPressed && isOnFloor) {
-      impulse.y += JUMP_FORCE
-    }
     if (rightPressed && linvel.x < MAX_SPEED) {
       impulse.x += MOVEMENT_SPEED
       changeRotation = true
@@ -69,38 +62,40 @@ const CharacterController = () => {
     }
 
     if (changeRotation) {
-      character.current.rotation.y = Math.atan2(linvel.x, linvel.z)
+      const angle = Math.atan2(linvel.x, linvel.z)
+      character.current.rotation.y = angle
     }
 
     // CAMERA FOLLOW
     const characterWorldPosition = character.current.getWorldPosition(new THREE.Vector3())
-    state.camera.position.x = characterWorldPosition.x + 3
-    state.camera.position.y = characterWorldPosition.y + 4
-    state.camera.position.z = characterWorldPosition.z + 7
 
-    const targetLookAt = new THREE.Vector3(characterWorldPosition.x, characterWorldPosition.y, characterWorldPosition.z)
+    const targetCameraPosition = new THREE.Vector3(
+      characterWorldPosition.x + 3,
+      characterWorldPosition.y + 4,
+      characterWorldPosition.z + 7
+    )
 
-    state.camera.lookAt(targetLookAt)
+    state.camera.position.lerp(targetCameraPosition, delta * 2)
+
+    const targetLookAt = new THREE.Vector3(characterWorldPosition.x, 0, characterWorldPosition.z)
+
+    const direction = new THREE.Vector3()
+    state.camera.getWorldDirection(direction)
+
+    const position = new THREE.Vector3()
+    state.camera.getWorldPosition(position)
+
+    const currentLookAt = position.clone().add(direction)
+    const lerpedLookAt = new THREE.Vector3()
+
+    lerpedLookAt.lerpVectors(currentLookAt, targetLookAt, delta * 2)
+
+    state.camera.lookAt(lerpedLookAt)
   })
 
   return (
     <group>
-      <RigidBody
-        ref={rigidbody}
-        colliders={false}
-        scale={[0.5, 0.5, 0.5]}
-        onCollisionEnter={({ other }) => {
-          if (other.rigidBodyObject?.name === 'ground') {
-            setIsOnFloor(true)
-          }
-        }}
-        onCollisionExit={({ other }) => {
-          if (other.rigidBodyObject?.name === 'ground') {
-            setIsOnFloor(false)
-          }
-        }}
-        enabledRotations={[false, false, false]}
-      >
+      <RigidBody ref={rigidbody} colliders={false} scale={[0.5, 0.5, 0.5]} enabledRotations={[false, false, false]}>
         <CapsuleCollider args={[0.8, 0.4]} position={[0, 1.2, 0]} />
         <group ref={character}>
           <CharacterModel />
